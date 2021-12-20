@@ -25,10 +25,10 @@ func astAnalysis(source string) {
 	}
 	//ast.Print(fset, f)
 
-	var funcs []string
-	var currentFunc string
+	var currentFunc string // The name of the current function
 
 	//This map is used to check if a variable is a channel or not
+	//To be used with the goArgumentsMp
 	channelMap := make(map[string]bool)
 
 	/*
@@ -53,7 +53,7 @@ func astAnalysis(source string) {
 
 		case *ast.FuncDecl:
 			currentFunc = x.Name.Name
-			funcs = append(funcs, currentFunc)
+			//funcs = append(funcs, currentFunc)
 			//Getting the *ast.FuncType to access the parameters
 			a := x.Type
 			//Getting the parameters of the function
@@ -83,15 +83,22 @@ func astAnalysis(source string) {
 
 		case *ast.UnaryExpr:
 			recName := x.X.(*ast.Ident)
-			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recName.Name, currentFunc)
+			recStmt := recName.Name
+
+			//Checking for the channel name inside the channel Correlation map
+			if val, ok := chanCorrelation[recName.Name]; ok {
+				recStmt = val
+			}
+
+			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		}
 		return true
 	})
 
 	fmt.Println("===============")
-	//fmt.Println("The functions are:", funcs)
 	fmt.Println("channels:", channelMap)
 	fmt.Println("Channel correlation:", chanCorrelation)
+	fmt.Println("GoArgumentMap:", goArgumentsMp)
 
 }
 
@@ -100,17 +107,9 @@ func CorrelateChans(pars []*ast.Field, goruMp map[int]string, chanCor map[string
 	for ind, val := range pars {
 		singlePar := val.Names[0]
 		if ch, ok := goruMp[ind]; ok {
-			//fmt.Println(singlePar.Name, "is at index", index)
+			//fmt.Println(singlePar.Name, "is at index", ch)
 			chanCor[singlePar.Name] = ch
 		}
 	}
 
-}
-
-func GetFuncParams(a *ast.FuncType) {
-	paraVals := a.Params.List
-	for index, val := range paraVals {
-		singlePar := val.Names[0]
-		fmt.Println(singlePar.Name, "is at index", index)
-	}
 }
