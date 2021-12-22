@@ -1,26 +1,22 @@
 package data
 
-import "fmt"
-
 func main() {
 	first := make(chan int)
-	third := make(chan string)
 
-	go sender(first, "Helllo", third)
-	go pong(third)
+	go sender(first)
 
 	<-first
 
 }
 
-func sender(c chan int, s string, rec chan string) {
+func sender(c chan int) {
 	second := make(chan string)
-	fmt.Println(second)
-	c <- 99
+	go pong(second)
 
-	rec <- "Hey there!"
+	c <- 99
+	<-second
 }
 
 func pong(b chan string) {
-	<-b
+	b <- "Hello"
 }

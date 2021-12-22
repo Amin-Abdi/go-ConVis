@@ -53,7 +53,6 @@ func astAnalysis(source string) {
 
 		case *ast.FuncDecl:
 			currentFunc = x.Name.Name
-			//funcs = append(funcs, currentFunc)
 			//Getting the *ast.FuncType to access the parameters
 			a := x.Type
 			//Getting the parameters of the function
@@ -79,6 +78,7 @@ func astAnalysis(source string) {
 			valSent := x.Value.(*ast.BasicLit).Kind.String()
 			//The channel where the value is being sent
 			dest := x.Chan.(*ast.Ident).Name
+			
 			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, chanCorrelation[dest], currentFunc)
 
 		case *ast.UnaryExpr:
@@ -89,7 +89,6 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[recName.Name]; ok {
 				recStmt = val
 			}
-
 			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		}
 		return true
