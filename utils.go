@@ -12,6 +12,7 @@ func GetExpString(a ast.Expr) string {
 	return types.ExprString(a)
 }
 
+// FindChannelName : Getting all the channels declarations
 func FindChannelName(x *ast.AssignStmt) string {
 	var left bytes.Buffer
 	var right bytes.Buffer
@@ -36,4 +37,16 @@ func FindChannelName(x *ast.AssignStmt) string {
 	left.Reset()
 
 	return chanName
+}
+
+//CorrelateChans : Correlating the channels by the indices of the Goroutine arguments and functions
+//Pars is the parameters of the function
+func CorrelateChans(pars []*ast.Field, goruMp map[int]string, chanCor map[string]string) {
+	for ind, val := range pars {
+		singlePar := val.Names[0]
+		if ch, ok := goruMp[ind]; ok {
+			//fmt.Println(singlePar.Name, "is at index", ch)
+			chanCor[singlePar.Name] = ch
+		}
+	}
 }

@@ -59,6 +59,7 @@ func astAnalysis(source string) {
 			paraVals := a.Params.List
 			//Returning the map that is stored by the func name i.e. sender
 			goMap := goArgumentsMp[currentFunc]
+
 			CorrelateChans(paraVals, goMap, chanCorrelation)
 
 		case *ast.GoStmt:
@@ -66,6 +67,7 @@ func astAnalysis(source string) {
 			goArgs := x.Call.Args
 			goArgumentsMp[st.Name] = make(map[int]string)
 
+			//if the argument is a channel, then add it to the goArgumentsMp with its index
 			for i, val := range goArgs {
 				valStr := GetExpString(val)
 				//Checking if the parameters which are channels
@@ -78,8 +80,11 @@ func astAnalysis(source string) {
 			valSent := x.Value.(*ast.BasicLit).Kind.String()
 			//The channel where the value is being sent
 			dest := x.Chan.(*ast.Ident).Name
-			
-			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, chanCorrelation[dest], currentFunc)
+			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
+			if val, ok := chanCorrelation[dest]; ok {
+				dest = val
+			}
+			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 
 		case *ast.UnaryExpr:
 			recName := x.X.(*ast.Ident)
@@ -94,21 +99,9 @@ func astAnalysis(source string) {
 		return true
 	})
 
-	fmt.Println("===============")
+	fmt.Println("===============================")
 	fmt.Println("channels:", channelMap)
 	fmt.Println("Channel correlation:", chanCorrelation)
 	fmt.Println("GoArgumentMap:", goArgumentsMp)
-
-}
-
-func CorrelateChans(pars []*ast.Field, goruMp map[int]string, chanCor map[string]string) {
-
-	for ind, val := range pars {
-		singlePar := val.Names[0]
-		if ch, ok := goruMp[ind]; ok {
-			//fmt.Println(singlePar.Name, "is at index", ch)
-			chanCor[singlePar.Name] = ch
-		}
-	}
 
 }
