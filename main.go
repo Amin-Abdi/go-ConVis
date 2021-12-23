@@ -27,6 +27,8 @@ func astAnalysis(source string) {
 
 	var currentFunc string // The name of the current function
 
+	var gorList []Creation
+
 	//This map is used to check if a variable is a channel or not
 	//To be used with the goArgumentsMp
 	channelMap := make(map[string]bool)
@@ -75,6 +77,10 @@ func astAnalysis(source string) {
 					goArgumentsMp[st.Name][i] = valStr
 				}
 			}
+			//The currentFunc can be used to get the origin of the goroutine
+			currGo := Creation{TypeOp: "Creation", Name: st.Name, Parent: currentFunc}
+
+			gorList = append(gorList, currGo)
 
 		case *ast.SendStmt:
 			valSent := x.Value.(*ast.BasicLit).Kind.String()
@@ -100,8 +106,10 @@ func astAnalysis(source string) {
 	})
 
 	fmt.Println("===============================")
-	fmt.Println("channels:", channelMap)
-	fmt.Println("Channel correlation:", chanCorrelation)
+	//fmt.Println("channels:", channelMap)
+	//fmt.Println("Channel correlation:", chanCorrelation)
 	fmt.Println("GoArgumentMap:", goArgumentsMp)
+
+	fmt.Println("The Goroutine List:", gorList)
 
 }
