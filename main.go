@@ -27,7 +27,11 @@ func astAnalysis(source string) {
 
 	var currentFunc string // The name of the current function
 
-	var gorList []Creation
+	//var gorList []Creation
+	//var passVals []SendRec
+
+	//my representations
+	var operations []interface{}
 
 	//This map is used to check if a variable is a channel or not
 	//To be used with the goArgumentsMp
@@ -69,6 +73,9 @@ func astAnalysis(source string) {
 			goArgs := x.Call.Args
 			goArgumentsMp[st.Name] = make(map[int]string)
 
+			//Creating the Goroutine creation representation
+			currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
+
 			//if the argument is a channel, then add it to the goArgumentsMp with its index
 			for i, val := range goArgs {
 				valStr := GetExpString(val)
@@ -78,9 +85,8 @@ func astAnalysis(source string) {
 				}
 			}
 			//The currentFunc can be used to get the origin of the goroutine
-			currGo := Creation{TypeOp: "Creation", Name: st.Name, Parent: currentFunc}
 
-			gorList = append(gorList, currGo)
+			operations = append(operations, currGo)
 
 		case *ast.SendStmt:
 			valSent := x.Value.(*ast.BasicLit).Kind.String()
@@ -90,6 +96,8 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[dest]; ok {
 				dest = val
 			}
+			mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+			operations = append(operations, mySend)
 			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 
 		case *ast.UnaryExpr:
@@ -100,6 +108,9 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[recName.Name]; ok {
 				recStmt = val
 			}
+			myRec := SendRec{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+			operations = append(operations, myRec)
+
 			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		}
 		return true
@@ -108,8 +119,8 @@ func astAnalysis(source string) {
 	fmt.Println("===============================")
 	//fmt.Println("channels:", channelMap)
 	//fmt.Println("Channel correlation:", chanCorrelation)
-	fmt.Println("GoArgumentMap:", goArgumentsMp)
+	//fmt.Println("GoArgumentMap:", goArgumentsMp)
 
-	fmt.Println("The Goroutine List:", gorList)
+	fmt.Println("The Representation List: \n", operations)
 
 }
