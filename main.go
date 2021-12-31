@@ -14,7 +14,14 @@ func main() {
 	srcPath := os.Args[1]
 	astAnalysis(srcPath)
 
-	//fmt.Println("The goroutines are:", myGoroutines)
+}
+
+type Representation struct {
+	TypeOp      string `json:"operation"`
+	Origin      string `json:"origin"`
+	Name        string `json:"name"`
+	Destination string `json:"destination"`
+	Value       string `json:"value"`
 }
 
 func astAnalysis(source string) {
@@ -31,7 +38,9 @@ func astAnalysis(source string) {
 	//var passVals []SendRec
 
 	//my representations
-	var operations []interface{}
+	var operations []Representation
+	{
+	}
 
 	//This map is used to check if a variable is a channel or not
 	//To be used with the goArgumentsMp
@@ -59,6 +68,7 @@ func astAnalysis(source string) {
 
 		case *ast.FuncDecl:
 			currentFunc = x.Name.Name
+
 			//Getting the *ast.FuncType to access the parameters
 			a := x.Type
 			//Getting the parameters of the function
@@ -74,7 +84,8 @@ func astAnalysis(source string) {
 			goArgumentsMp[st.Name] = make(map[int]string)
 
 			//Creating the Goroutine creation representation
-			currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
+			currGo := Representation{TypeOp: "creation", Name: st.Name, Origin: currentFunc}
+			//currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
 
 			//if the argument is a channel, then add it to the goArgumentsMp with its index
 			for i, val := range goArgs {
@@ -96,7 +107,10 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[dest]; ok {
 				dest = val
 			}
-			mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+
+			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+
 			operations = append(operations, mySend)
 			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 
@@ -108,7 +122,9 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[recName.Name]; ok {
 				recStmt = val
 			}
-			myRec := SendRec{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+			//myRec := SendRec{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+			myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+
 			operations = append(operations, myRec)
 
 			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
@@ -120,7 +136,6 @@ func astAnalysis(source string) {
 	//fmt.Println("channels:", channelMap)
 	//fmt.Println("Channel correlation:", chanCorrelation)
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
-
 	fmt.Println("The Representation List: \n", operations)
 
 }
