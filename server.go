@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -11,6 +12,7 @@ func HandleRequests() {
 
 	//The url routes
 	router.HandleFunc("/home", homePage).Methods("GET")
+	router.HandleFunc("/operations", getRepresentation).Methods("GET")
 
 	var address string = "127.0.0.1:8000"
 
@@ -31,4 +33,6 @@ func homePage(rw http.ResponseWriter, r *http.Request) {
 func getRepresentation(rw http.ResponseWriter, r *http.Request) {
 	fmt.Println("getRepresentation called!")
 	rw.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(rw).Encode(Operations)
 }
