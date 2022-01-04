@@ -18,11 +18,14 @@ func main() {
 
 type Representation struct {
 	TypeOp      string `json:"operation"`
-	Origin      string `json:"origin"`
 	Name        string `json:"name"`
+	Origin      string `json:"origin"`
 	Destination string `json:"destination"`
 	Value       string `json:"value"`
 }
+
+// Operations : list of representations
+var Operations []Representation
 
 func astAnalysis(source string) {
 	fset := token.NewFileSet()
@@ -34,26 +37,18 @@ func astAnalysis(source string) {
 
 	var currentFunc string // The name of the current function
 
-	//var gorList []Creation
-	//var passVals []SendRec
-
-	//my representations
-	var operations []Representation
-	{
-	}
-
 	//This map is used to check if a variable is a channel or not
 	//To be used with the goArgumentsMp
 	channelMap := make(map[string]bool)
-
 	/*
 		This is for storing the goroutine arguments and the values
 		it stores a map of key: "GoRoutine name" and values are the channel names and their indices
 	*/
 	goArgumentsMp := make(map[string]map[int]string)
-
 	//This is for the channel Correlation
 	chanCorrelation := make(map[string]string)
+
+	//Operations = append(Operations, Representation{TypeOp: })
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -83,8 +78,7 @@ func astAnalysis(source string) {
 			goArgs := x.Call.Args
 			goArgumentsMp[st.Name] = make(map[int]string)
 
-			//Creating the Goroutine creation representation
-			currGo := Representation{TypeOp: "creation", Name: st.Name, Origin: currentFunc}
+			currGo := Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
 			//currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
 
 			//if the argument is a channel, then add it to the goArgumentsMp with its index
@@ -96,8 +90,7 @@ func astAnalysis(source string) {
 				}
 			}
 			//The currentFunc can be used to get the origin of the goroutine
-
-			operations = append(operations, currGo)
+			Operations = append(Operations, currGo)
 
 		case *ast.SendStmt:
 			valSent := x.Value.(*ast.BasicLit).Kind.String()
@@ -111,8 +104,8 @@ func astAnalysis(source string) {
 			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
 			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
 
-			operations = append(operations, mySend)
-			fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
+			Operations = append(Operations, mySend)
+			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 
 		case *ast.UnaryExpr:
 			recName := x.X.(*ast.Ident)
@@ -124,10 +117,8 @@ func astAnalysis(source string) {
 			}
 			//myRec := SendRec{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
 			myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
-
-			operations = append(operations, myRec)
-
-			fmt.Printf("The receieve statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
+			Operations = append(Operations, myRec)
+			//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		}
 		return true
 	})
@@ -136,6 +127,10 @@ func astAnalysis(source string) {
 	//fmt.Println("channels:", channelMap)
 	//fmt.Println("Channel correlation:", chanCorrelation)
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
-	fmt.Println("The Representation List: \n", operations)
+	//fmt.Println("The Representation List:\n", Operations)
 
+	//for _, val := range Operations {
+	//	fmt.Println(val)
+	//}
+	HandleRequests()
 }
