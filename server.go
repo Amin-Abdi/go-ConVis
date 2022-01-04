@@ -10,11 +10,11 @@ import (
 func HandleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
-	//The url routes
+	//The API endpoints urls
 	router.HandleFunc("/home", homePage).Methods("GET")
 	router.HandleFunc("/operations", getRepresentation).Methods("GET")
 
-	var address string = "127.0.0.1:8000"
+	address := "127.0.0.1:8000"
 
 	fmt.Println("Server is currently running on:", address)
 	err := http.ListenAndServe(address, router)
@@ -24,15 +24,23 @@ func HandleRequests() {
 
 }
 
-//HomePage : Just for Testing purposes only
+//Just for Testing purposes only
 func homePage(rw http.ResponseWriter, r *http.Request) {
+	_ = r
 	fmt.Fprintf(rw, "Endpoints called: HomePage")
 	fmt.Println("HomePage function called")
 }
 
+//get the representation list in json format
 func getRepresentation(rw http.ResponseWriter, r *http.Request) {
 	fmt.Println("getRepresentation called!")
 	rw.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(rw).Encode(Operations)
+	//To enable Cors policy
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	_ = r
+	err := json.NewEncoder(rw).Encode(Operations)
+	if err != nil {
+		return
+	}
 }
