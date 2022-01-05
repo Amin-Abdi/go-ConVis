@@ -48,7 +48,8 @@ func astAnalysis(source string) {
 	//This is for the channel Correlation
 	chanCorrelation := make(map[string]string)
 
-	//Operations = append(Operations, Representation{TypeOp: })
+	//Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
+	Operations = append(Operations, Representation{TypeOp: "goroutine", Name: "main"})
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -78,7 +79,7 @@ func astAnalysis(source string) {
 			goArgs := x.Call.Args
 			goArgumentsMp[st.Name] = make(map[int]string)
 
-			currGo := Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
+			currGo := Representation{TypeOp: "goroutine", Name: st.Name, Origin: currentFunc}
 			//currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
 
 			//if the argument is a channel, then add it to the goArgumentsMp with its index

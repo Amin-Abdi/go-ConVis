@@ -2,15 +2,14 @@ package data
 
 func main() {
 	first := make(chan int)
-	third := make(chan int)
 
-	go ping(first, "Hasicas", third)
+	go ping(first, "Hasicas")
 
 	<-first
 
 }
 
-func ping(c chan int, k string, a chan int) {
+func ping(c chan int, k string) {
 	second := make(chan string)
 	go pong(second)
 

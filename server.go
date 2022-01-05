@@ -28,12 +28,11 @@ func HandleRequests() {
 func homePage(rw http.ResponseWriter, r *http.Request) {
 	_ = r
 	fmt.Fprintf(rw, "Endpoints called: HomePage")
-	fmt.Println("HomePage function called")
 }
 
 //get the representation list in json format
 func getRepresentation(rw http.ResponseWriter, r *http.Request) {
-	fmt.Println("getRepresentation called!")
+	//fmt.Println("getRepresentation called!")
 	rw.Header().Set("Content-Type", "application/json")
 	//To enable Cors policy
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
