@@ -3,6 +3,11 @@ export function insert(arr, index, newItem) {
   return [...arr.slice(0, index), newItem, ...arr.slice(index)];
 }
 
+export const BLACK = 0x000000;
+export const BLUE = 0x0000ff;
+export const GREEN = 0x00ff00;
+export const RED = 0xff0000;
+
 // const insert = (arr, index, newItem) => [
 //     // part of the array before the specified index
 //     ...arr.slice(0, index),

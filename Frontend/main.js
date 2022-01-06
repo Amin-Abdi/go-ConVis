@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 
 import axios from "axios";
-import { insert } from "./utils";
+import { insert, BLACK, BLUE } from "./utils";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -80,9 +80,9 @@ for (let i = 0; i < numOfLines; i++) {
   initialLength = initialLength + divisions;
   var goLine = new Graphics();
   goLine
-    .lineStyle(3, 0x000000, 1)
+    .lineStyle(3, BLUE, 1)
     .moveTo(initialLength, 80)
     .lineTo(initialLength, 600);
   app.stage.addChild(goLine);
-  console.log(goLine.getBounds().x, ":", sequenceMsg[i]);
+  //   console.log(goLine.getBounds().x, ":", sequenceMsg[i]);
 }
