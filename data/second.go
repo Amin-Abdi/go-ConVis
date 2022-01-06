@@ -3,13 +3,13 @@ package data
 func main() {
 	first := make(chan int)
 
-	go ping(first, "Hasicas")
+	go ping(first)
 
 	<-first
 
 }
 
-func ping(c chan int, k string) {
+func ping(c chan int) {
 	second := make(chan string)
 	go pong(second)
 

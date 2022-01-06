@@ -37,24 +37,52 @@ for (let i = 0; i < myData.length; i++) {
   }
 }
 console.log("operation map:", operationMap);
-console.log("Sequence:", sequenceMsg);
+console.log("Initial Sequence:", sequenceMsg);
 
 //Getting the placement of channels
 for (let i = 0; i < myData.length; i++) {
   let myObj = myData[i];
 
   if (myObj.operation === "send") {
-    //console.log(myObj.origin, " : index: ", sequenceMsg.indexOf(myObj.origin))
     let sendIndex = sequenceMsg.indexOf(myObj.origin);
+    //console.log(myObj.origin, " is at index ", sendIndex);
     sequenceMsg = insert(sequenceMsg, sendIndex, myObj.destination);
   }
 }
+
 console.log("Result:", sequenceMsg);
 
+//Drawing part
 const app = new PIXI.Application({
   width: innerWidth,
   height: innerHeight,
   backgroundColor: 0xffffff,
   antialias: true,
 });
+
 window.devicePixelRatio = 2;
+app.renderer.view.style.position = "absolute";
+document.body.appendChild(app.view);
+
+const textStyle = new PIXI.TextStyle({
+  fontFamily: "Monteserrat",
+  fontSize: 25, //Make this variable as the number of lines is unkown
+});
+
+const Graphics = PIXI.Graphics;
+
+const numOfLines = sequenceMsg.length;
+let divisions = Math.floor((innerWidth - 30) / numOfLines);
+var initialLength = -40;
+
+//Drawing the vertical Lines i.e Goroutines and channels
+for (let i = 0; i < numOfLines; i++) {
+  initialLength = initialLength + divisions;
+  var goLine = new Graphics();
+  goLine
+    .lineStyle(3, 0x000000, 1)
+    .moveTo(initialLength, 80)
+    .lineTo(initialLength, 600);
+  app.stage.addChild(goLine);
+  console.log(goLine.getBounds().x, ":", sequenceMsg[i]);
+}
