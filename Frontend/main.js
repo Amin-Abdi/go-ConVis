@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 
 import axios from "axios";
-import { insert, BLACK, BLUE } from "./utils";
+import { getLineColor, insert } from "./utils";
+import { BLACK, BLUE } from "./constants";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -17,6 +18,8 @@ let sequenceMsg = [];
 
 //This map will be used later when drawing the lines for threads and channels
 const operationMap = new Map();
+const sendRecSet = [];
+
 //Correlating goroutines and channels
 for (let i = 0; i < myData.length; i++) {
   /**
@@ -32,12 +35,15 @@ for (let i = 0; i < myData.length; i++) {
   //check for channels
   if (myObj.operation === "send") {
     operationMap.set(myObj.destination, "channel");
-  } else if (myObj.operation === "receive") {
+    sendRecSet.push(myObj);
+  }
+  if (myObj.operation === "receive") {
     operationMap.set(myObj.origin, "channel");
+    sendRecSet.push(myObj);
   }
 }
 console.log("operation map:", operationMap);
-console.log("Initial Sequence:", sequenceMsg);
+//console.log("Initial Sequence:", sequenceMsg);
 
 //Getting the placement of channels
 for (let i = 0; i < myData.length; i++) {
@@ -78,11 +84,22 @@ var initialLength = -40;
 //Drawing the vertical Lines i.e Goroutines and channels
 for (let i = 0; i < numOfLines; i++) {
   initialLength = initialLength + divisions;
+  let lineName = new PIXI.Text(sequenceMsg[i], textStyle);
+  lineName.resolution = 1;
+  lineName.position.set(initialLength - 22, 55);
+  app.stage.addChild(lineName);
+
+  let linetype = operationMap.get(sequenceMsg[i]);
+  let lineColour = getLineColor(linetype);
+
   var goLine = new Graphics();
   goLine
-    .lineStyle(3, BLUE, 1)
+    .lineStyle(3, lineColour, 1)
     .moveTo(initialLength, 80)
     .lineTo(initialLength, 600);
   app.stage.addChild(goLine);
-  //   console.log(goLine.getBounds().x, ":", sequenceMsg[i]);
 }
+
+//console.log(sendRecSet);
+
+//let chanLine = new Graphics()
