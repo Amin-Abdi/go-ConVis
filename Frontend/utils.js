@@ -1,5 +1,5 @@
 //function for ordering channels with their respective goroutines
-import { BLACK, BLUE } from "./constants";
+import { BLACK, BLUE, GREEN, RED } from "./constants";
 
 export function insert(arr, index, newItem) {
   return [...arr.slice(0, index), newItem, ...arr.slice(index)];
@@ -8,6 +8,10 @@ export function insert(arr, index, newItem) {
 export function getLineColor(lnType) {
   if (lnType === "channel") {
     return BLUE;
+  } else if (lnType === "send") {
+    return RED;
+  } else if (lnType === "receive") {
+    return GREEN;
   }
 
   return BLACK;

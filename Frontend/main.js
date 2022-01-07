@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 
 import axios from "axios";
 import { getLineColor, insert } from "./utils";
-import { BLACK, BLUE } from "./constants";
+import { BLACK, BLUE, RED } from "./constants";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -18,7 +18,7 @@ let sequenceMsg = [];
 
 //This map will be used later when drawing the lines for threads and channels
 const operationMap = new Map();
-const sendRecSet = [];
+const sendRecArr = [];
 
 //Correlating goroutines and channels
 for (let i = 0; i < myData.length; i++) {
@@ -35,14 +35,14 @@ for (let i = 0; i < myData.length; i++) {
   //check for channels
   if (myObj.operation === "send") {
     operationMap.set(myObj.destination, "channel");
-    sendRecSet.push(myObj);
+    sendRecArr.push(myObj);
   }
   if (myObj.operation === "receive") {
     operationMap.set(myObj.origin, "channel");
-    sendRecSet.push(myObj);
+    sendRecArr.push(myObj);
   }
 }
-console.log("operation map:", operationMap);
+//console.log("operation map:", operationMap);
 //console.log("Initial Sequence:", sequenceMsg);
 
 //Getting the placement of channels
@@ -79,7 +79,12 @@ const Graphics = PIXI.Graphics;
 
 const numOfLines = sequenceMsg.length;
 let divisions = Math.floor((innerWidth - 30) / numOfLines);
-var initialLength = -40;
+let initialLength = -40;
+let startHeight = 80;
+let endHeight = 600;
+
+//Coordinates of the goroutines and channels
+const verticalCordinates = new Map();
 
 //Drawing the vertical Lines i.e Goroutines and channels
 for (let i = 0; i < numOfLines; i++) {
@@ -92,14 +97,39 @@ for (let i = 0; i < numOfLines; i++) {
   let linetype = operationMap.get(sequenceMsg[i]);
   let lineColour = getLineColor(linetype);
 
-  var goLine = new Graphics();
+  let goLine = new Graphics();
   goLine
     .lineStyle(3, lineColour, 1)
-    .moveTo(initialLength, 80)
-    .lineTo(initialLength, 600);
+    .moveTo(initialLength, startHeight)
+    .lineTo(initialLength, endHeight);
   app.stage.addChild(goLine);
+
+  verticalCordinates.set(sequenceMsg[i], initialLength);
 }
 
-//console.log(sendRecSet);
+console.log("Here", verticalCordinates);
 
-//let chanLine = new Graphics()
+//For the send and receive messages
+let msgNums = sendRecArr.length;
+let msgHeight = endHeight - startHeight;
+let msgDivs = Math.floor(msgHeight / msgNums);
+let startChanHeight = 80;
+
+//Drawing the messages
+for (let i = 0; i < msgNums; i++) {
+  startChanHeight = startChanHeight + msgDivs - 1;
+
+  let myMsg = sendRecArr[i];
+  let msgColour = getLineColor(myMsg.operation);
+
+  let start = verticalCordinates.get(myMsg.origin);
+  let end = verticalCordinates.get(myMsg.destination);
+
+  let chanLine = new Graphics();
+  chanLine
+    .lineStyle(3, msgColour, 1)
+    .moveTo(start, startChanHeight)
+    .lineTo(end, startChanHeight);
+
+  app.stage.addChild(chanLine);
+}

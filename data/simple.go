@@ -6,6 +6,7 @@ func main() {
 	go sender(first)
 
 	<-first
+
 }
 
 func sender(c chan int) {
