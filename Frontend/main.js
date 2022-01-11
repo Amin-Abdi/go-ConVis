@@ -1,8 +1,6 @@
 import * as PIXI from "pixi.js";
-
 import axios from "axios";
 import { getLineColor, insert } from "./utils";
-import { BLACK, BLUE, RED } from "./constants";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -43,7 +41,7 @@ for (let i = 0; i < myData.length; i++) {
   }
 }
 //console.log("operation map:", operationMap);
-//console.log("Initial Sequence:", sequenceMsg);
+console.log("Initial Sequence:", sequenceMsg);
 
 //Getting the placement of channels
 for (let i = 0; i < myData.length; i++) {
@@ -52,7 +50,9 @@ for (let i = 0; i < myData.length; i++) {
   if (myObj.operation === "send") {
     let sendIndex = sequenceMsg.indexOf(myObj.origin);
     //console.log(myObj.origin, " is at index ", sendIndex);
-    sequenceMsg = insert(sequenceMsg, sendIndex, myObj.destination);
+    if (!sequenceMsg.includes(myObj.destination)) {
+      sequenceMsg = insert(sequenceMsg, sendIndex, myObj.destination);
+    }
   }
 }
 
@@ -107,13 +107,13 @@ for (let i = 0; i < numOfLines; i++) {
   verticalCordinates.set(sequenceMsg[i], initialLength);
 }
 
-console.log("Here", verticalCordinates);
+console.log("Vertical Cordinates:", verticalCordinates);
 
 //For the send and receive messages
 let msgNums = sendRecArr.length;
 let msgHeight = endHeight - startHeight;
 let msgDivs = Math.floor(msgHeight / msgNums);
-let startChanHeight = 80;
+let startChanHeight = 78;
 
 //Drawing the messages
 for (let i = 0; i < msgNums; i++) {
