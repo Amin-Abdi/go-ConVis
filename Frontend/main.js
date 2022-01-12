@@ -90,7 +90,7 @@ const verticalCordinates = new Map();
 for (let i = 0; i < numOfLines; i++) {
   initialLength = initialLength + divisions;
   let lineName = new PIXI.Text(sequenceMsg[i], textStyle);
-  lineName.resolution = 1;
+  lineName.resolution = 2;
   lineName.position.set(initialLength - 22, 55);
   app.stage.addChild(lineName);
 
@@ -107,7 +107,7 @@ for (let i = 0; i < numOfLines; i++) {
   verticalCordinates.set(sequenceMsg[i], initialLength);
 }
 
-console.log("Vertical Cordinates:", verticalCordinates);
+//console.log("Vertical Cordinates:", verticalCordinates);
 
 //For the send and receive messages
 let msgNums = sendRecArr.length;
@@ -131,5 +131,22 @@ for (let i = 0; i < msgNums; i++) {
     .moveTo(start, startChanHeight)
     .lineTo(end, startChanHeight);
 
+  let arrow = new Graphics();
+
+  if (myMsg.operation === "send") {
+    arrow
+      .lineStyle(3, msgColour, 1)
+      .moveTo(end + 16, startChanHeight - 10)
+      .lineTo(end, startChanHeight)
+      .lineTo(end + 16, startChanHeight + 10);
+  } else if (myMsg.operation === "receive") {
+    arrow
+      .lineStyle(3, msgColour, 1)
+      .moveTo(end - 16, startChanHeight - 10)
+      .lineTo(end, startChanHeight)
+      .lineTo(end - 16, startChanHeight + 10);
+  }
+
   app.stage.addChild(chanLine);
+  app.stage.addChild(arrow);
 }
