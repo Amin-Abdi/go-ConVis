@@ -17,6 +17,10 @@ export function getLineColor(lnType) {
   return BLACK;
 }
 
+export function capitalise(s) {
+  return s && s[0].toUpperCase() + s.slice(1);
+}
+
 // const insert = (arr, index, newItem) => [
 //     // part of the array before the specified index
 //     ...arr.slice(0, index),

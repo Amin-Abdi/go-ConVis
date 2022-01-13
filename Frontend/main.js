@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import axios from "axios";
-import { getLineColor, insert } from "./utils";
+import { getLineColor, insert, capitalise } from "./utils";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -83,7 +83,7 @@ const Graphics = PIXI.Graphics;
 const numOfLines = sequenceMsg.length;
 let divisions = Math.floor((innerWidth - 30) / numOfLines);
 let initialLength = -40;
-let startHeight = 80;
+let startHeight = 90;
 let endHeight = 600;
 
 //Coordinates of the goroutines and channels
@@ -92,9 +92,9 @@ const verticalCordinates = new Map();
 //Drawing the vertical Lines i.e Goroutines and channels
 for (let i = 0; i < numOfLines; i++) {
   initialLength = initialLength + divisions;
-  let lineName = new PIXI.Text(sequenceMsg[i], textStyle);
+  let lineName = new PIXI.Text(capitalise(sequenceMsg[i]), textStyle);
   lineName.resolution = 2;
-  lineName.position.set(initialLength - 22, 55);
+  lineName.position.set(initialLength - 22, 65);
   app.stage.addChild(lineName);
 
   let linetype = operationMap.get(sequenceMsg[i]);
@@ -176,3 +176,35 @@ for (let i = 0; i < msgNums; i++) {
   app.stage.addChild(arrow);
   app.stage.addChild(valOperation);
 }
+
+//Index for the colour representation
+const infolist = ["Goroutine", "channel", "receive", "send"];
+let infoContainer = new PIXI.Container();
+infoContainer.x = 400;
+
+function addIntro() {
+  let initialX = 0;
+  let spaceInterval = 50;
+
+  for (let i = 0; i < infolist.length; i++) {
+    drawInfoShape(infolist[i], initialX);
+    initialX = initialX + spaceInterval * 3;
+  }
+}
+
+function drawInfoShape(s, myX) {
+  // console.log(s, getLineColor(s));
+  console.log(myX);
+  let boxColor = getLineColor(s);
+  let square = new Graphics();
+  square.beginFill(boxColor).drawRect(myX, 20, 30, 30).endFill();
+
+  let boxName = new PIXI.Text(capitalise(s), textStyle);
+  boxName.resolution = 2;
+  boxName.position.set(myX + 35, 23);
+
+  infoContainer.addChild(square);
+  infoContainer.addChild(boxName);
+}
+app.stage.addChild(infoContainer);
+addIntro();
