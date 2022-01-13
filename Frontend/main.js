@@ -16,7 +16,9 @@ let sequenceMsg = [];
 
 //This map will be used later when drawing the lines for threads and channels
 const operationMap = new Map();
+//Send and receive operations
 const sendRecArr = [];
+const chanType = new Map();
 
 //Correlating goroutines and channels
 for (let i = 0; i < myData.length; i++) {
@@ -33,6 +35,7 @@ for (let i = 0; i < myData.length; i++) {
   //check for channels
   if (myObj.operation === "send") {
     operationMap.set(myObj.destination, "channel");
+    chanType.set(myObj.destination, myObj.value);
     sendRecArr.push(myObj);
   }
   if (myObj.operation === "receive") {
@@ -107,13 +110,18 @@ for (let i = 0; i < numOfLines; i++) {
   verticalCordinates.set(sequenceMsg[i], initialLength);
 }
 
-//console.log("Vertical Cordinates:", verticalCordinates);
+//console.log("Vertical Cordinates:", verticalCordinates)
 
 //For the send and receive messages
 let msgNums = sendRecArr.length;
 let msgHeight = endHeight - startHeight;
 let msgDivs = Math.floor(msgHeight / msgNums);
 let startChanHeight = 78;
+
+const messageStyle = new PIXI.TextStyle({
+  fontFamily: "Monteserrat",
+  fontSize: 15, //Make this variable as the number of lines is unkown
+});
 
 //Drawing the messages
 for (let i = 0; i < msgNums; i++) {
@@ -124,6 +132,7 @@ for (let i = 0; i < msgNums; i++) {
 
   let start = verticalCordinates.get(myMsg.origin);
   let end = verticalCordinates.get(myMsg.destination);
+  let msgInterval = Math.abs(end - start);
 
   let chanLine = new Graphics();
   chanLine
@@ -131,22 +140,39 @@ for (let i = 0; i < msgNums; i++) {
     .moveTo(start, startChanHeight)
     .lineTo(end, startChanHeight);
 
+  //The direction of the send and receive operations
   let arrow = new Graphics();
+  let valPosition;
 
-  if (myMsg.operation === "send") {
-    arrow
-      .lineStyle(3, msgColour, 1)
-      .moveTo(end + 16, startChanHeight - 10)
-      .lineTo(end, startChanHeight)
-      .lineTo(end + 16, startChanHeight + 10);
-  } else if (myMsg.operation === "receive") {
+  if (end > start) {
+    valPosition = end - msgInterval / 2 - 15;
     arrow
       .lineStyle(3, msgColour, 1)
       .moveTo(end - 16, startChanHeight - 10)
       .lineTo(end, startChanHeight)
       .lineTo(end - 16, startChanHeight + 10);
+  } else {
+    valPosition = start - msgInterval / 2 - 15;
+    arrow
+      .lineStyle(3, msgColour, 1)
+      .moveTo(end + 16, startChanHeight - 10)
+      .lineTo(end, startChanHeight)
+      .lineTo(end + 16, startChanHeight + 10);
   }
+
+  //Value being sent and received
+  let sendRecVal;
+  if (myMsg.operation === "send") {
+    sendRecVal = chanType.get(myMsg.destination);
+  } else if (myMsg.operation === "receive") {
+    sendRecVal = chanType.get(myMsg.origin);
+  }
+
+  let valOperation = new PIXI.Text(sendRecVal, messageStyle);
+  valOperation.resolution = 2;
+  valOperation.position.set(valPosition, startChanHeight - 16);
 
   app.stage.addChild(chanLine);
   app.stage.addChild(arrow);
+  app.stage.addChild(valOperation);
 }

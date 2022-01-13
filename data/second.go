@@ -14,7 +14,6 @@ func ping(c chan int) {
 	go pong(second)
 
 	c <- 99
-	second <- "Hello World"
 	<-second
 
 }

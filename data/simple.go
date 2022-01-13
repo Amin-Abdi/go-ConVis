@@ -6,11 +6,9 @@ func main() {
 	go sender(first)
 
 	<-first
-	//<-first
 
 }
 
 func sender(c chan int) {
 	c <- 99
-	//c <- 12
 }
