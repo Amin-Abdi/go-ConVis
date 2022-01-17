@@ -92,6 +92,9 @@ const verticalCordinates = new Map();
 //Drawing the vertical Lines i.e Goroutines and channels
 for (let i = 0; i < numOfLines; i++) {
   initialLength = initialLength + divisions;
+  if (sequenceMsg.length > 8) {
+    textStyle.fontSize = 21;
+  }
   let lineName = new PIXI.Text(capitalise(sequenceMsg[i]), textStyle);
   lineName.resolution = 2;
   lineName.position.set(initialLength - 22, 65);
@@ -112,6 +115,8 @@ for (let i = 0; i < numOfLines; i++) {
 
 //console.log("Vertical Cordinates:", verticalCordinates)
 
+console.log("Operations:", sendRecArr);
+
 //For the send and receive messages
 let msgNums = sendRecArr.length;
 let msgHeight = endHeight - startHeight;
@@ -121,6 +126,7 @@ let startChanHeight = 78;
 const messageStyle = new PIXI.TextStyle({
   fontFamily: "Monteserrat",
   fontSize: 15, //Make this variable as the number of lines is unkown
+  trim: true,
 });
 
 //Drawing the messages
@@ -194,7 +200,6 @@ function addIntro() {
 
 function drawInfoShape(s, myX) {
   // console.log(s, getLineColor(s));
-  console.log(myX);
   let boxColor = getLineColor(s);
   let square = new Graphics();
   square.beginFill(boxColor).drawRect(myX, 20, 30, 30).endFill();
