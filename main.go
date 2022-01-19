@@ -93,21 +93,6 @@ func astAnalysis(source string) {
 			//The currentFunc can be used to get the origin of the goroutine
 			Operations = append(Operations, currGo)
 
-		case *ast.SendStmt:
-			valSent := x.Value.(*ast.BasicLit).Kind.String()
-			//The channel where the value is being sent
-			dest := x.Chan.(*ast.Ident).Name
-			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
-			if val, ok := chanCorrelation[dest]; ok {
-				dest = val
-			}
-
-			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
-			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
-
-			Operations = append(Operations, mySend)
-			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
-
 		case *ast.UnaryExpr:
 			recName := x.X.(*ast.Ident)
 			recStmt := recName.Name
@@ -116,10 +101,28 @@ func astAnalysis(source string) {
 			if val, ok := chanCorrelation[recName.Name]; ok {
 				recStmt = val
 			}
-			//myRec := SendRec{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
-			myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
-			Operations = append(Operations, myRec)
+			//This is to avoid other types of unary expressions from being recorded
+			//Check if the origin of the receive stmt is a channel
+			if _, ok := channelMap[recStmt]; ok {
+				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+				Operations = append(Operations, myRec)
+			}
+
 			//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
+
+		case *ast.SendStmt:
+			valSent := x.Value.(*ast.BasicLit).Kind.String()
+			//The channel where the value is being sent
+			dest := x.Chan.(*ast.Ident).Name
+			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
+			if val, ok := chanCorrelation[dest]; ok {
+				dest = val
+			}
+			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+
+			Operations = append(Operations, mySend)
+			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 		}
 		return true
 	})

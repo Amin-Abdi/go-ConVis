@@ -1,11 +1,11 @@
 package data
 
 func main() {
-	consumer := make(chan int)
+	con := make(chan int)
 
-	worker1(consumer)
+	go temp1(con)
 }
 
-func worker1(a chan int) {
+func temp1(a chan int) {
 	a <- 99
 }
