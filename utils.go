@@ -50,3 +50,11 @@ func CorrelateChans(pars []*ast.Field, goruMp map[int]string, chanCor map[string
 		}
 	}
 }
+
+// GetChanType : This is used to get the type of channel i.e. Int, String, Float etc
+func GetChanType(ch *ast.AssignStmt) string {
+	rightSide := ch.Rhs[0].(*ast.CallExpr).Args[0].(*ast.ChanType)
+	chanArg := rightSide.Value.(*ast.Ident)
+
+	return chanArg.Name
+}

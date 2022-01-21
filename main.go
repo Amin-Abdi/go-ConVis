@@ -7,6 +7,7 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -40,6 +41,9 @@ func astAnalysis(source string) {
 	//This map is used to check if a variable is a channel or not
 	//To be used with the goArgumentsMp
 	channelMap := make(map[string]bool)
+	//This is for the channel types
+	chanTypeMap := make(map[string]string)
+
 	/*
 		This is for storing the goroutine arguments and the values
 		it stores a map of key: "GoRoutine name" and values are the channel names and their indices
@@ -51,15 +55,19 @@ func astAnalysis(source string) {
 	//Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
 	Operations = append(Operations, Representation{TypeOp: "goroutine", Name: "main"})
 
+	//Send stmt tests
+	//var mySends string[]
+
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.AssignStmt:
 			chanName := FindChannelName(x)
-			//fmt.Println("Found channel:", chanName)
 
 			//If a channel is found then add to the channel map
 			if chanName != "" {
 				channelMap[chanName] = true
+				//fmt.Println(chanName, "uses", GetChanType(x))
+				chanTypeMap[chanName] = GetChanType(x)
 			}
 
 		case *ast.FuncDecl:
@@ -108,21 +116,24 @@ func astAnalysis(source string) {
 				Operations = append(Operations, myRec)
 			}
 
-			//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
-
+		//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		case *ast.SendStmt:
-			valSent := x.Value.(*ast.BasicLit).Kind.String()
+			//valSent := x.Value.(*ast.BasicLit).Kind.String()
 			//The channel where the value is being sent
 			dest := x.Chan.(*ast.Ident).Name
+
 			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
 			if val, ok := chanCorrelation[dest]; ok {
 				dest = val
 			}
+
+			valSent := strings.ToUpper(chanTypeMap[dest])
+
 			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
 			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
-
 			Operations = append(Operations, mySend)
 			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
+			//fmt.Println("Sending to channel:", dest, fset.Position(x.Pos()), "a value of", valSent)
 		}
 		return true
 	})
@@ -133,8 +144,8 @@ func astAnalysis(source string) {
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
 	//fmt.Println("The Representation List:\n", Operations)
 
-	//for _, val := range Operations {
-	//	fmt.Println(val)
-	//}
+	for _, val := range Operations {
+		fmt.Println(val)
+	}
 	HandleRequests()
 }

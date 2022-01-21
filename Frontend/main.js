@@ -75,7 +75,7 @@ document.body.appendChild(app.view);
 
 const textStyle = new PIXI.TextStyle({
   fontFamily: "Monteserrat",
-  fontSize: 25, //Make this variable as the number of lines is unkown
+  fontSize: 24, //Make this variable as the number of lines is unknown
 });
 
 const Graphics = PIXI.Graphics;
