@@ -146,7 +146,7 @@ function handleMouseOver(rectangle, lineType, info) {
 
         //Checking for outbound message
         if (originMessage.x > 1200) {
-          originMessage.x = originMessage.x - 60;
+          originMessage.x = 1140;
         }
         rectangle.message = originMessage;
         rectangle.addChild(originMessage);
