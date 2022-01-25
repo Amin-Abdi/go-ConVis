@@ -118,22 +118,17 @@ func astAnalysis(source string) {
 
 		//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		case *ast.SendStmt:
-			//valSent := x.Value.(*ast.BasicLit).Kind.String()
 			//The channel where the value is being sent
 			dest := x.Chan.(*ast.Ident).Name
-
 			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
 			if val, ok := chanCorrelation[dest]; ok {
 				dest = val
 			}
-
 			valSent := strings.ToUpper(chanTypeMap[dest])
 
-			//mySend := SendRec{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
 			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
 			Operations = append(Operations, mySend)
 			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
-			//fmt.Println("Sending to channel:", dest, fset.Position(x.Pos()), "a value of", valSent)
 		}
 		return true
 	})
@@ -144,8 +139,8 @@ func astAnalysis(source string) {
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
 	//fmt.Println("The Representation List:\n", Operations)
 
-	for _, val := range Operations {
-		fmt.Println(val)
-	}
+	//for _, val := range Operations {
+	//	fmt.Println(val)
+	//}
 	HandleRequests()
 }

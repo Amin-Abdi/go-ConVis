@@ -19,6 +19,7 @@ const operationMap = new Map();
 //Send and receive operations
 const sendRecArr = [];
 const chanType = new Map();
+const originMap = new Map();
 
 //Correlating goroutines and channels
 for (let i = 0; i < myData.length; i++) {
@@ -31,6 +32,7 @@ for (let i = 0; i < myData.length; i++) {
   if (myObj.operation === "goroutine") {
     operationMap.set(myObj.name, "goroutine");
     sequenceMsg.push(myObj.name);
+    originMap.set(myObj.name, myObj.origin);
   }
   //check for channels
   if (myObj.operation === "send") {
@@ -60,6 +62,7 @@ for (let i = 0; i < myData.length; i++) {
 }
 
 console.log("Result:", sequenceMsg);
+//console.log("Origin Map:", originMap);
 
 //Drawing part
 const app = new PIXI.Application({
@@ -84,7 +87,7 @@ const numOfLines = sequenceMsg.length;
 let divisions = Math.floor((innerWidth - 30) / numOfLines);
 let initialLength = -40;
 let startHeight = 90;
-let endHeight = 600;
+let endHeight = 510;
 
 //Coordinates of the goroutines and channels
 const verticalCordinates = new Map();
@@ -95,6 +98,7 @@ for (let i = 0; i < numOfLines; i++) {
   if (sequenceMsg.length > 8) {
     textStyle.fontSize = 21;
   }
+
   let lineName = new PIXI.Text(capitalise(sequenceMsg[i]), textStyle);
   lineName.resolution = 2;
   lineName.position.set(initialLength - 22, 65);
@@ -103,19 +107,48 @@ for (let i = 0; i < numOfLines; i++) {
   let linetype = operationMap.get(sequenceMsg[i]);
   let lineColour = getLineColor(linetype);
 
-  let goLine = new Graphics();
-  goLine
-    .lineStyle(3, lineColour, 1)
-    .moveTo(initialLength, startHeight)
-    .lineTo(initialLength, endHeight);
-  app.stage.addChild(goLine);
+  let rect = new Graphics();
+  rect
+    .beginFill(lineColour, 1)
+    .drawRect(initialLength, startHeight, 4, endHeight);
+  rect.interactive = true;
 
+  rect.hitArea = new PIXI.Rectangle(initialLength, startHeight, 5, endHeight);
+
+  handleMouseOver(rect, linetype, sequenceMsg[i]);
+
+  rect.mouseout = function (mouseData) {
+    rect.removeChild(rect.message);
+    delete rect.message;
+  };
+
+  app.stage.addChild(rect);
   verticalCordinates.set(sequenceMsg[i], initialLength);
 }
-
 //console.log("Vertical Cordinates:", verticalCordinates)
+//console.log("Operations:", sendRecArr);
 
-console.log("Operations:", sendRecArr);
+function handleMouseOver(rectangle, lineType, info) {
+  const style = new PIXI.TextStyle({
+    font: "5px Courier, monospace",
+    fill: "#FFA500",
+    background: 0x000000,
+  });
+
+  rectangle.mouseover = function (mouseData) {
+    if (lineType === "goroutine") {
+      let localOrigin = originMap.get(info);
+      if (localOrigin !== "") {
+        let originMessage = new PIXI.Text(`origin: ${localOrigin}`, style);
+        originMessage.resolution = 2;
+        originMessage.x = mouseData.data.global.x;
+        originMessage.y = mouseData.data.global.y;
+        rectangle.message = originMessage;
+        rectangle.addChild(originMessage);
+      }
+    }
+  };
+}
 
 //For the send and receive messages
 let msgNums = sendRecArr.length;

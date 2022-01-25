@@ -3,22 +3,22 @@ package data
 func main() {
 	first := make(chan int)
 
-	go ping(first)
+	go go1(first)
 
 	<-first
 
 }
 
-func ping(c chan int) {
+func go1(c chan int) {
 	second := make(chan string)
-	go pong(second)
+	go go2(second)
 
 	c <- 99
 	<-second
 
 }
 
-func pong(b chan string) {
-	<-b
+func go2(b chan string) {
+	//<-b
 	b <- "variable 2"
 }
