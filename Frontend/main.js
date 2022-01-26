@@ -232,28 +232,22 @@ function drawDotted(msgLine, colour, first, last, height) {
   // console.log(`start: ${first} End: ${last}`);
 
   let corsArr = sortCors(first, last);
-  let start = corsArr[0];
-  let finish = corsArr[1];
-  let lineLength = finish - start;
-
-  let intervals = Math.floor(lineLength / 5);
+  const start = corsArr[0];
+  const finish = corsArr[1];
+  const interval = 5;
 
   let updatedStart = start;
-  let updatedFinish = start + 5;
+  let updatedFinish = start + interval;
 
-  console.log(`BEFORE::: start ${first} END: ${last}`);
-
-  for (let i = 1; i < intervals; i++) {
+  while (updatedFinish < finish) {
     msgLine
       .lineStyle(3, colour, 1)
       .moveTo(updatedStart, height)
       .lineTo(updatedFinish, height);
 
-    updatedStart = updatedFinish + 5;
-    updatedFinish = updatedStart + 5;
+    updatedStart = updatedFinish + interval;
+    updatedFinish = updatedStart + interval;
   }
-
-  console.log(`AFTER::: start: ${updatedStart} Finish ${updatedFinish}`);
 }
 
 //Index for the colour representation
