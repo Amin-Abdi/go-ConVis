@@ -21,6 +21,12 @@ export function capitalise(s) {
   return s && s[0].toUpperCase() + s.slice(1);
 }
 
+export function orderSeq(arr) {
+  let newArr = arr.slice(1);
+  newArr.push(arr[0]);
+  return newArr;
+}
+
 // const insert = (arr, index, newItem) => [
 //     // part of the array before the specified index
 //     ...arr.slice(0, index),

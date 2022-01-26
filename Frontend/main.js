@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import axios from "axios";
-import { getLineColor, insert, capitalise } from "./utils";
+import { getLineColor, insert, capitalise, orderSeq } from "./utils";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -17,7 +17,7 @@ let sequenceMsg = [];
 //This map will be used later when drawing the lines for threads and channels
 const operationMap = new Map();
 //Send and receive operations
-const sendRecArr = [];
+let sendRecArr = [];
 const chanType = new Map();
 const originMap = new Map();
 
@@ -87,7 +87,7 @@ const numOfLines = sequenceMsg.length;
 let divisions = Math.floor((innerWidth - 30) / numOfLines);
 let initialLength = -40;
 let startHeight = 90;
-let endHeight = 510;
+let endHeight = 600;
 
 //Coordinates of the goroutines and channels
 const verticalCordinates = new Map();
@@ -108,9 +108,7 @@ for (let i = 0; i < numOfLines; i++) {
   let lineColour = getLineColor(linetype);
 
   let rect = new Graphics();
-  rect
-    .beginFill(lineColour, 1)
-    .drawRect(initialLength, startHeight, 4, endHeight);
+  rect.beginFill(lineColour, 1).drawRect(initialLength, startHeight, 4, 510);
   rect.interactive = true;
 
   rect.hitArea = new PIXI.Rectangle(initialLength, startHeight, 5, endHeight);
@@ -166,6 +164,9 @@ const messageStyle = new PIXI.TextStyle({
   fontSize: 15, //Make this variable as the number of lines is unkown
   trim: true,
 });
+
+let newSeqOrder = orderSeq(sendRecArr);
+sendRecArr = newSeqOrder;
 
 //Drawing the messages
 for (let i = 0; i < msgNums; i++) {

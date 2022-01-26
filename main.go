@@ -23,6 +23,7 @@ type Representation struct {
 	Origin      string `json:"origin"`
 	Destination string `json:"destination"`
 	Value       string `json:"value"`
+	Condition   bool   `json:"condition"`
 }
 
 // Operations : list of representations
@@ -55,8 +56,8 @@ func astAnalysis(source string) {
 	//Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
 	Operations = append(Operations, Representation{TypeOp: "goroutine", Name: "main"})
 
-	//Send stmt tests
-	//var mySends string[]
+	//Check for if statements
+	var inIf bool
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -70,7 +71,11 @@ func astAnalysis(source string) {
 				chanTypeMap[chanName] = GetChanType(x)
 			}
 
+		case *ast.IfStmt:
+			inIf = true
+
 		case *ast.FuncDecl:
+			inIf = false
 			currentFunc = x.Name.Name
 
 			//Getting the *ast.FuncType to access the parameters
@@ -112,7 +117,7 @@ func astAnalysis(source string) {
 			//This is to avoid other types of unary expressions from being recorded
 			//Check if the origin of the receive stmt is a channel
 			if _, ok := channelMap[recStmt]; ok {
-				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc}
+				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc, Condition: inIf}
 				Operations = append(Operations, myRec)
 			}
 
@@ -126,7 +131,7 @@ func astAnalysis(source string) {
 			}
 			valSent := strings.ToUpper(chanTypeMap[dest])
 
-			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent}
+			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent, Condition: inIf}
 			Operations = append(Operations, mySend)
 			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 		}
@@ -139,8 +144,8 @@ func astAnalysis(source string) {
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
 	//fmt.Println("The Representation List:\n", Operations)
 
-	//for _, val := range Operations {
-	//	fmt.Println(val)
-	//}
-	HandleRequests()
+	for _, val := range Operations {
+		fmt.Println(val)
+	}
+	//HandleRequests()
 }
