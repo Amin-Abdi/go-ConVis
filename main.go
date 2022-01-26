@@ -147,5 +147,5 @@ func astAnalysis(source string) {
 	for _, val := range Operations {
 		fmt.Println(val)
 	}
-	//HandleRequests()
+	HandleRequests()
 }

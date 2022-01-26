@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import axios from "axios";
-import { getLineColor, insert, capitalise, orderSeq } from "./utils";
+import { getLineColor, insert, capitalise, orderSeq, sortCors } from "./utils";
 
 const URL = "http://localhost:8000/operations";
 let myData;
@@ -180,10 +180,16 @@ for (let i = 0; i < msgNums; i++) {
   let msgInterval = Math.abs(end - start);
 
   let chanLine = new Graphics();
-  chanLine
-    .lineStyle(3, msgColour, 1)
-    .moveTo(start, startChanHeight)
-    .lineTo(end, startChanHeight);
+
+  if (sendRecArr[i].condition) {
+    //console.log(`start: ${start} End: ${end}`);
+    drawDotted(chanLine, msgColour, start, end, startChanHeight);
+  } else {
+    chanLine
+      .lineStyle(3, msgColour, 1)
+      .moveTo(start, startChanHeight)
+      .lineTo(end, startChanHeight);
+  }
 
   //The direction of the send and receive operations
   let arrow = new Graphics();
@@ -220,6 +226,34 @@ for (let i = 0; i < msgNums; i++) {
   app.stage.addChild(chanLine);
   app.stage.addChild(arrow);
   app.stage.addChild(valOperation);
+}
+
+function drawDotted(msgLine, colour, first, last, height) {
+  // console.log(`start: ${first} End: ${last}`);
+
+  let corsArr = sortCors(first, last);
+  let start = corsArr[0];
+  let finish = corsArr[1];
+  let lineLength = finish - start;
+
+  let intervals = Math.floor(lineLength / 5);
+
+  let updatedStart = start;
+  let updatedFinish = start + 5;
+
+  console.log(`BEFORE::: start ${first} END: ${last}`);
+
+  for (let i = 1; i < intervals; i++) {
+    msgLine
+      .lineStyle(3, colour, 1)
+      .moveTo(updatedStart, height)
+      .lineTo(updatedFinish, height);
+
+    updatedStart = updatedFinish + 5;
+    updatedFinish = updatedStart + 5;
+  }
+
+  console.log(`AFTER::: start: ${updatedStart} Finish ${updatedFinish}`);
 }
 
 //Index for the colour representation

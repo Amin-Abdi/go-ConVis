@@ -27,6 +27,10 @@ export function orderSeq(arr) {
   return newArr;
 }
 
+export function sortCors(first, last) {
+  return [first, last].sort((a, b) => a - b);
+}
+
 // const insert = (arr, index, newItem) => [
 //     // part of the array before the specified index
 //     ...arr.slice(0, index),
