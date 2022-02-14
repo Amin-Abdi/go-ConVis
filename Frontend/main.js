@@ -101,7 +101,7 @@ for (let i = 0; i < numOfLines; i++) {
 
   let lineName = new PIXI.Text(capitalise(sequenceMsg[i]), textStyle);
   lineName.resolution = 2;
-  lineName.position.set(initialLength - 22, 65);
+  lineName.position.set(initialLength - 25, 65);
   app.stage.addChild(lineName);
 
   let linetype = operationMap.get(sequenceMsg[i]);

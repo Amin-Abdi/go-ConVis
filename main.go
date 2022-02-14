@@ -14,7 +14,8 @@ func main() {
 	//Getting the source file
 	srcPath := os.Args[1]
 	astAnalysis(srcPath)
-
+	//Start the server
+	HandleRequests()
 }
 
 type Representation struct {
@@ -35,8 +36,13 @@ func astAnalysis(source string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	traverseAST(f)
 	//ast.Print(fset, f)
 
+}
+
+func traverseAST(f *ast.File) {
 	var currentFunc string // The name of the current function
 
 	//This map is used to check if a variable is a channel or not
@@ -44,7 +50,6 @@ func astAnalysis(source string) {
 	channelMap := make(map[string]bool)
 	//This is for the channel types
 	chanTypeMap := make(map[string]string)
-
 	/*
 		This is for storing the goroutine arguments and the values
 		it stores a map of key: "GoRoutine name" and values are the channel names and their indices
@@ -57,8 +62,7 @@ func astAnalysis(source string) {
 	Operations = append(Operations, Representation{TypeOp: "goroutine", Name: "main"})
 
 	//Check for if statements
-	var inIf bool
-
+	var conditional bool
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.AssignStmt:
@@ -72,19 +76,20 @@ func astAnalysis(source string) {
 			}
 
 		case *ast.IfStmt:
-			inIf = true
+			conditional = true
+
+		case *ast.SelectStmt:
+			conditional = true
 
 		case *ast.FuncDecl:
-			inIf = false
+			conditional = false
 			currentFunc = x.Name.Name
-
 			//Getting the *ast.FuncType to access the parameters
 			a := x.Type
 			//Getting the parameters of the function
 			paraVals := a.Params.List
 			//Returning the map that is stored by the func name i.e. sender
 			goMap := goArgumentsMp[currentFunc]
-
 			CorrelateChans(paraVals, goMap, chanCorrelation)
 
 		case *ast.GoStmt:
@@ -117,7 +122,7 @@ func astAnalysis(source string) {
 			//This is to avoid other types of unary expressions from being recorded
 			//Check if the origin of the receive stmt is a channel
 			if _, ok := channelMap[recStmt]; ok {
-				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc, Condition: inIf}
+				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc, Condition: conditional}
 				Operations = append(Operations, myRec)
 			}
 
@@ -131,7 +136,7 @@ func astAnalysis(source string) {
 			}
 			valSent := strings.ToUpper(chanTypeMap[dest])
 
-			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent, Condition: inIf}
+			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent, Condition: conditional}
 			Operations = append(Operations, mySend)
 			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 		}
@@ -147,5 +152,4 @@ func astAnalysis(source string) {
 	for _, val := range Operations {
 		fmt.Println(val)
 	}
-	HandleRequests()
 }
