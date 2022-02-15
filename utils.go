@@ -61,10 +61,6 @@ func GetChanType(ch *ast.AssignStmt) string {
 	return chanArg.Name
 }
 
-func isEven(a int) bool {
-	return a%2 == 0
-}
-
 // Testparser : FileSet generation fro the test files
 func Testparser(src string) *ast.File {
 	fset := token.NewFileSet()
