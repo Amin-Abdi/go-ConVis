@@ -144,7 +144,7 @@ func traverseAST(f *ast.File) {
 	})
 
 	fmt.Println("===============================")
-	//fmt.Println("channels:", channelMap)
+	fmt.Println("channels:", channelMap)
 	//fmt.Println("Channel correlation:", chanCorrelation)
 	//fmt.Println("GoArgumentMap:", goArgumentsMp)
 	//fmt.Println("The Representation List:\n", Operations)

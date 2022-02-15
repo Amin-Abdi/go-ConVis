@@ -4,6 +4,8 @@ package main
 import (
 	"bytes"
 	"go/ast"
+	"go/parser"
+	"go/token"
 	"go/types"
 	"strings"
 )
@@ -57,4 +59,16 @@ func GetChanType(ch *ast.AssignStmt) string {
 	chanArg := rightSide.Value.(*ast.Ident)
 
 	return chanArg.Name
+}
+
+func isEven(a int) bool {
+	return a%2 == 0
+}
+
+// Testparser : FileSet generation fro the test files
+func Testparser(src string) *ast.File {
+	fset := token.NewFileSet()
+	f, _ := parser.ParseFile(fset, "test", src, 0)
+
+	return f
 }
