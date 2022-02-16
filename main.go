@@ -14,8 +14,8 @@ func main() {
 	//Getting the source file
 	srcPath := os.Args[1]
 	astAnalysis(srcPath)
-	//Start the server
-	HandleRequests()
+
+	startServer()
 }
 
 type Representation struct {
@@ -90,6 +90,8 @@ func traverseAST(f *ast.File) {
 			paraVals := a.Params.List
 			//Returning the map that is stored by the func name i.e. sender
 			goMap := goArgumentsMp[currentFunc]
+			fmt.Println("goMap:", goMap)
+			fmt.Println("ChanCorr1:", chanCorrelation)
 			CorrelateChans(paraVals, goMap, chanCorrelation)
 
 		case *ast.GoStmt:
@@ -144,12 +146,12 @@ func traverseAST(f *ast.File) {
 	})
 
 	fmt.Println("===============================")
-	fmt.Println("channels:", channelMap)
-	//fmt.Println("Channel correlation:", chanCorrelation)
-	//fmt.Println("GoArgumentMap:", goArgumentsMp)
+	//fmt.Println("channels:", channelMap)
+	fmt.Println("Channel correlation:", chanCorrelation)
+	fmt.Println("GoArgumentMap:", goArgumentsMp)
 	//fmt.Println("The Representation List:\n", Operations)
 
-	for _, val := range Operations {
-		fmt.Println(val)
-	}
+	//for _, val := range Operations {
+	//	fmt.Println(val)
+	//}
 }

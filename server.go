@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func HandleRequests() {
+func startServer() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	//The API endpoints urls
