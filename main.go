@@ -15,7 +15,7 @@ func main() {
 	srcPath := os.Args[1]
 	astAnalysis(srcPath)
 
-	//startServer()
+	startServer()
 }
 
 type Representation struct {
