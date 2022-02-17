@@ -123,3 +123,41 @@ func TestCorrelateChansMany(t *testing.T) {
 	assert.Equal(t, "second", chanCorrelation["k"], errorMsg)
 
 }
+
+func TestHandleGoroutine(t *testing.T) {
+	input := `
+	package data
+
+	func main() {
+		first := make(chan int)
+		go sender(first)
+		<-first
+	}
+	func sender(c chan int) {
+		c <- 99
+	}
+	`
+	//Mocking data for testing
+	goName := "sender"
+	goArgumentsMp := make(map[string]map[int]string)
+	chanMap := make(map[string]bool)
+	chanMap["first"] = true
+
+	f := Testparser(input)
+
+	ast.Inspect(f, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.GoStmt:
+			st := x.Call.Fun.(*ast.Ident)
+			goArgs := x.Call.Args
+			argName := st.Name
+			HandleGoroutine(goArgumentsMp, goArgs, chanMap, argName)
+		}
+		return true
+	})
+	expected := "first"
+	actual := goArgumentsMp[goName][0]
+
+	assert.Equal(t, expected, actual, "The channel named first should be at index 0")
+
+}

@@ -15,7 +15,7 @@ func main() {
 	srcPath := os.Args[1]
 	astAnalysis(srcPath)
 
-	startServer()
+	//startServer()
 }
 
 type Representation struct {
@@ -127,8 +127,7 @@ func traverseAST(f *ast.File) {
 	})
 
 	fmt.Println("===============================")
-
-	for _, val := range Operations {
-		fmt.Println(val)
-	}
+	//for _, val := range Operations {
+	//	fmt.Println(val)
+	//}
 }
