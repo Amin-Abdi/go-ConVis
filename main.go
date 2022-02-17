@@ -83,33 +83,19 @@ func traverseAST(f *ast.File) {
 
 		case *ast.FuncDecl:
 			conditional = false
-			currentFunc = x.Name.Name
-			//Getting the *ast.FuncType to access the parameters
+			currentFunc = GetCurrentFunc(x)
 			a := x.Type
-			//Getting the parameters of the function
 			paraVals := a.Params.List
-			//Returning the map that is stored by the func name i.e. sender
 			goMap := goArgumentsMp[currentFunc]
-			fmt.Println("goMap:", goMap)
-			fmt.Println("ChanCorr1:", chanCorrelation)
+
 			CorrelateChans(paraVals, goMap, chanCorrelation)
 
 		case *ast.GoStmt:
 			st := x.Call.Fun.(*ast.Ident)
 			goArgs := x.Call.Args
-			goArgumentsMp[st.Name] = make(map[int]string)
-
 			currGo := Representation{TypeOp: "goroutine", Name: st.Name, Origin: currentFunc}
-			//currGo := Creation{TypeOp: "creation", Name: st.Name, Parent: currentFunc}
-
-			//if the argument is a channel, then add it to the goArgumentsMp with its index
-			for i, val := range goArgs {
-				valStr := GetExpString(val)
-				//Checking if the parameters which are channels
-				if _, ok := channelMap[valStr]; ok {
-					goArgumentsMp[st.Name][i] = valStr
-				}
-			}
+			argName := st.Name
+			HandleGoroutine(goArgumentsMp, goArgs, channelMap, argName)
 			//The currentFunc can be used to get the origin of the goroutine
 			Operations = append(Operations, currGo)
 
@@ -127,31 +113,22 @@ func traverseAST(f *ast.File) {
 				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc, Condition: conditional}
 				Operations = append(Operations, myRec)
 			}
-
-		//fmt.Printf("The receive statement is from channel %v to the Goroutine \"%v\" \n", recStmt, currentFunc)
 		case *ast.SendStmt:
-			//The channel where the value is being sent
 			dest := x.Chan.(*ast.Ident).Name
 			//Check if the sendStmt Channel name is in the correlation, if not then just use that chan name
 			if val, ok := chanCorrelation[dest]; ok {
 				dest = val
 			}
 			valSent := strings.ToUpper(chanTypeMap[dest])
-
 			mySend := Representation{TypeOp: "send", Origin: currentFunc, Destination: dest, Value: valSent, Condition: conditional}
 			Operations = append(Operations, mySend)
-			//fmt.Printf("The value %v is sent to the channel %v from Goroutine \"%v\" \n", valSent, dest, currentFunc)
 		}
 		return true
 	})
 
 	fmt.Println("===============================")
-	//fmt.Println("channels:", channelMap)
-	fmt.Println("Channel correlation:", chanCorrelation)
-	fmt.Println("GoArgumentMap:", goArgumentsMp)
-	//fmt.Println("The Representation List:\n", Operations)
 
-	//for _, val := range Operations {
-	//	fmt.Println(val)
-	//}
+	for _, val := range Operations {
+		fmt.Println(val)
+	}
 }

@@ -68,3 +68,18 @@ func Testparser(src string) *ast.File {
 
 	return f
 }
+
+func GetCurrentFunc(decl *ast.FuncDecl) string {
+	return decl.Name.Name
+}
+func HandleGoroutine(mp map[string]map[int]string, args []ast.Expr, channelMap map[string]bool, name string) {
+	mp[name] = make(map[int]string)
+	//if the argument is a channel, then add it to the goArgumentsMp with its index
+	for i, val := range args {
+		valStr := GetExpString(val)
+		//Checking if the parameters which are channels
+		if _, ok := channelMap[valStr]; ok {
+			mp[name][i] = valStr
+		}
+	}
+}
