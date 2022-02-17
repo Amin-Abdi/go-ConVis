@@ -4,8 +4,27 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"go/ast"
+	"go/parser"
+	"go/token"
 	"testing"
 )
+
+func TestTestparser(t *testing.T) {
+	testCase := `
+	package data
+
+	func main() {
+		first := make(chan int)
+		go sender(first, "hello")
+		<-first
+	}
+	`
+	fset1 := token.NewFileSet()
+	expected, _ := parser.ParseFile(fset1, "test", testCase, 0)
+	actual := Testparser(testCase)
+	assert.Equal(t, expected, actual, "The AST file types should be the same")
+
+}
 
 func TestGetExpString(t *testing.T) {
 
