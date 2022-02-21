@@ -38,20 +38,20 @@ func producer(a chan string) {
 
 func thread1(a chan int, w *sync.WaitGroup) {
 	defer w.Done()
-	fmt.Println(<-a)
+	<-a
 }
 
 func thread2(a chan int, w *sync.WaitGroup) {
 	defer w.Done()
-	fmt.Println(<-a)
+	<-a
 }
 
 func thread3(a chan int, w *sync.WaitGroup) {
 	defer w.Done()
-	fmt.Println(<-a)
+	<-a
 }
 
 func thread4(a chan int, w *sync.WaitGroup) {
 	defer w.Done()
-	fmt.Println(<-a)
+	<-a
 }
