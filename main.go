@@ -36,32 +36,20 @@ func astAnalysis(source string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	traverseAST(f)
-	//ast.Print(fset, f)
-
 }
 
 func traverseAST(f *ast.File) {
 	var currentFunc string // The name of the current function
 
-	//This map is used to check if a variable is a channel or not
-	//To be used with the goArgumentsMp
 	channelMap := make(map[string]bool)
 	//This is for the channel types
 	chanTypeMap := make(map[string]string)
-	/*
-		This is for storing the goroutine arguments and the values
-		it stores a map of key: "GoRoutine name" and values are the channel names and their indices
-	*/
 	goArgumentsMp := make(map[string]map[int]string)
-	//This is for the channel Correlation
 	chanCorrelation := make(map[string]string)
 
-	//Representation{TypeOp: "goroutine", Origin: currentFunc, Name: st.Name}
 	Operations = append(Operations, Representation{TypeOp: "goroutine", Name: "main"})
 
-	//Check for if statements
 	var conditional bool
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -71,7 +59,6 @@ func traverseAST(f *ast.File) {
 			//If a channel is found then add to the channel map
 			if chanName != "" {
 				channelMap[chanName] = true
-				//fmt.Println(chanName, "uses", GetChanType(x))
 				chanTypeMap[chanName] = GetChanType(x)
 			}
 
@@ -107,8 +94,6 @@ func traverseAST(f *ast.File) {
 			if val, ok := chanCorrelation[recName.Name]; ok {
 				recStmt = val
 			}
-			//This is to avoid other types of unary expressions from being recorded
-			//Check if the origin of the receive stmt is a channel
 			if _, ok := channelMap[recStmt]; ok {
 				myRec := Representation{TypeOp: "receive", Origin: recStmt, Destination: currentFunc, Condition: conditional}
 				Operations = append(Operations, myRec)
