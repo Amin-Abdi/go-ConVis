@@ -16,7 +16,7 @@ func TestGetChannelName(t *testing.T) {
 		first := make(chan int)
 	}
 	`
-	f := Testparser(testcase)
+	f := Parser(testcase)
 	var expected string
 
 	ast.Inspect(f, func(n ast.Node) bool {
@@ -38,7 +38,7 @@ func TestNegativeChannelName(t *testing.T) {
 		value := "Hello World"
 	}
 	`
-	f := Testparser(testcase)
+	f := Parser(testcase)
 	var expected string
 
 	ast.Inspect(f, func(n ast.Node) bool {
@@ -89,7 +89,7 @@ func TestChannelTypes(t *testing.T) {
 	chanTypeMap := make(map[string]string)
 
 	for i := 0; i < len(testSlice); i++ {
-		f := Testparser(testSlice[i])
+		f := Parser(testSlice[i])
 
 		chanName := names[i]
 

@@ -19,7 +19,7 @@ func TestGetCurrentFunc(t *testing.T) {
 	`
 	var currentFunc string
 
-	f := Testparser(input)
+	f := Parser(input)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -49,7 +49,7 @@ func TestMsgOrigins(t *testing.T) {
 	var sendOrigin string
 	var receiveOrigin string
 
-	f := Testparser(input)
+	f := Parser(input)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {

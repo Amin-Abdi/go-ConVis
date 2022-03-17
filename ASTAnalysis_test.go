@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestTestparser(t *testing.T) {
+func TestParser(t *testing.T) {
 	testCase := `
 	package data
 
@@ -21,7 +21,7 @@ func TestTestparser(t *testing.T) {
 	`
 	fset1 := token.NewFileSet()
 	expected, _ := parser.ParseFile(fset1, "test", testCase, 0)
-	actual := Testparser(testCase)
+	actual := Parser(testCase)
 	assert.Equal(t, expected, actual, "The AST file types should be the same")
 
 }
@@ -40,7 +40,7 @@ func TestGetExpString(t *testing.T) {
 	var actualArr []string
 	expectedArr := []string{"first", "\"hello\""}
 
-	f := Testparser(testCase)
+	f := Parser(testCase)
 	ast.Inspect(f, func(n ast.Node) bool {
 
 		switch x := n.(type) {
@@ -83,7 +83,7 @@ func TestCorrelateChansOne(t *testing.T) {
 	goArgumentsMp[currentFunc] = make(map[int]string)
 	goArgumentsMp[currentFunc][0] = "first"
 
-	f := Testparser(input)
+	f := Parser(input)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 
@@ -123,7 +123,7 @@ func TestCorrelateChansMany(t *testing.T) {
 	goArgumentsMp[currentFunc][0] = "first"
 	goArgumentsMp[currentFunc][2] = "second"
 
-	f := Testparser(input)
+	f := Parser(input)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 
@@ -162,7 +162,7 @@ func TestHandleGoroutine(t *testing.T) {
 	chanMap := make(map[string]bool)
 	chanMap["first"] = true
 
-	f := Testparser(input)
+	f := Parser(input)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
