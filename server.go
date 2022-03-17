@@ -9,12 +9,11 @@ import (
 
 func startServer() {
 	router := mux.NewRouter().StrictSlash(true)
+	address := "127.0.0.1:8000"
 
 	//The API endpoints urls
 	router.HandleFunc("/home", homePage).Methods("GET")
 	router.HandleFunc("/operations", getRepresentation).Methods("GET")
-
-	address := "127.0.0.1:8000"
 
 	fmt.Println("Server is currently running on:", address)
 	err := http.ListenAndServe(address, router)
