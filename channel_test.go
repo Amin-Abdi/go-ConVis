@@ -13,6 +13,7 @@ func TestGetChannelName(t *testing.T) {
 	package main
 
 	func main() {
+		height := 22.01
 		first := make(chan int)
 	}
 	`
@@ -27,7 +28,7 @@ func TestGetChannelName(t *testing.T) {
 		return true
 	})
 	assert.Equal(t, "first", expected, "Should be Equal")
-	assert.NotEqual(t, "second", expected, "Should be Equal")
+	assert.NotEqual(t, "height", expected, "Should be Equal")
 }
 
 func TestNegativeChannelName(t *testing.T) {

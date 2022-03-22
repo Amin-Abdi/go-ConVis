@@ -35,7 +35,6 @@ func TestGetCurrentFunc(t *testing.T) {
 func TestMsgOrigins(t *testing.T) {
 	input := `
 	package data
-
 	func main() {
 		first := make(chan int)
 		go sender(first)

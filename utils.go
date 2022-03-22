@@ -55,7 +55,7 @@ func GetChanType(ch *ast.AssignStmt) string {
 	return chanArg.Name
 }
 
-// Testparser : FileSet generation fro the test files
+// Testparser : FileSet generation for the files
 func Parser(src string) *ast.File {
 	fset := token.NewFileSet()
 	f, _ := parser.ParseFile(fset, "test", src, 0)
