@@ -1,6 +1,6 @@
 # go-ConVis
-####This is an application that visualises how the Go programming language handles concurrency
-####The visualisations consist of goroutines, channels and the values that are sent over the channels.
+#### This is an application that visualises how the Go programming language handles concurrency
+#### The visualisations consist of goroutines, channels and the values that are sent over the channels.
 ## Installation and Usage
 First install the Go dependencies:
 
