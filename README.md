@@ -26,6 +26,8 @@ Run the frontend server (in the frontend folder):
 
     npm run dev
 
+**Note:** Make sure to rename all the main functions to just main
+
 ## Description
 
 The application performs a static analysis on the programs and generates a JSON object representation of the goroutines, channels and values being sent over the channels.
