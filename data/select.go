@@ -2,7 +2,7 @@ package data
 
 import "fmt"
 
-func main() {
+func main6() {
 	c1 := make(chan int)
 	c2 := make(chan int)
 

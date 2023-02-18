@@ -2,7 +2,7 @@ package data
 
 import "math"
 
-func main() {
+func main1() {
 	cha1 := make(chan string)
 	myVal := math.Log10(1148)
 

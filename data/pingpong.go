@@ -1,6 +1,6 @@
 package data
 
-func main() {
+func main5() {
 	table := make(chan int)
 
 	go player1(table)

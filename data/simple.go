@@ -1,6 +1,6 @@
 package data
 
-func main() {
+func main7() {
 	first := make(chan int)
 
 	go sender(first)

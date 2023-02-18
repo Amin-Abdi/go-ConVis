@@ -1,6 +1,6 @@
 package data
 
-func main() {
+func main4() {
 	first := make(chan int)
 	second := make(chan string)
 

@@ -6,7 +6,7 @@ import (
 )
 
 //Use only this class for testing use cases don't change the other test cases.
-func main() {
+func main8() {
 	var wg sync.WaitGroup
 
 	cons := make(chan int, 1)

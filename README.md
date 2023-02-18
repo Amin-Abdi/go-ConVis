@@ -1,15 +1,21 @@
 # go-ConVis
+
 #### This is an application that visualises how the Go programming language handles concurrency
+
 #### The visualisations consist of goroutines, channels and the values that are sent over the channels.
+
 ## Installation and Usage
+
 First install the Go dependencies:
 
     go install
+
 In the Frontend folder install the npm dependencies
 
     npm install
-Build the go binary using: 
-    
+
+Build the go binary using:
+
     go build
 
 Execute the binary with the program file path as arguments e.g.,:
@@ -19,7 +25,9 @@ Execute the binary with the program file path as arguments e.g.,:
 Run the frontend server (in the frontend folder):
 
     npm run dev
+
 ## Description
+
 The application performs a static analysis on the programs and generates a JSON object representation of the goroutines, channels and values being sent over the channels.
 
 ![JSON Array](./assets/img.png)
@@ -27,12 +35,20 @@ The application performs a static analysis on the programs and generates a JSON 
 The Frontend visualisations is done using the [Pixi.js](https://pixijs.com/) framework
 
 ## Visualisations
+
 Below is the visualisation of the simple.go program found in the examples folder
 ![Visualisation](./assets/simple.png)
+Here are the visualisations for the concurrency patters:
+**Fan-in** --> when one goroutine reads from multiple goroutines and multiplexes all inputs into a
+single channel.
+![Visualisation](./assets/fanin.png)
+**Fan-out** is when multiple goroutines read from the same channel.
+![Visualisation](./assets/fanout.png)
 
 ## Dependencies
-* [Gorilla Mux](https://github.com/gorilla/mux)
-* [Tesify](https://github.com/stretchr/testify)
-* [Pixi.js](https://pixijs.com/)
-* [Vite.js](https://vitejs.dev/)
-* [Axios](https://axios-http.com/)
+
+- [Gorilla Mux](https://github.com/gorilla/mux)
+- [Tesify](https://github.com/stretchr/testify)
+- [Pixi.js](https://pixijs.com/)
+- [Vite.js](https://vitejs.dev/)
+- [Axios](https://axios-http.com/)

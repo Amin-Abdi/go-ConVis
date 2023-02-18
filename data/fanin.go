@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func main() {
+func main2() {
 	var wg sync.WaitGroup
 	consumer := make(chan int, 3)
 	result := make(chan string, 1)
