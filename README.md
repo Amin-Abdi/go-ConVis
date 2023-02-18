@@ -40,10 +40,12 @@ The Frontend visualisations is done using the [Pixi.js](https://pixijs.com/) fra
 
 Below is the visualisation of the simple.go program found in the examples folder
 ![Visualisation](./assets/simple.png)
+
 Here are the visualisations for the concurrency patters:
 **Fan-in** --> when one goroutine reads from multiple goroutines and multiplexes all inputs into a
 single channel.
 ![Visualisation](./assets/fanin.png)
+
 **Fan-out** is when multiple goroutines read from the same channel.
 ![Visualisation](./assets/fanout.png)
 
